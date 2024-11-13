@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-// import 'package:vibration/vibration.dart';
+import 'dart:async';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -43,105 +44,223 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  // final int _betAmount = 0;
-  bool _showRipple = false;
-  Offset _tapPosition = Offset.zero;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
+class RippleEffect {
+  ValueNotifier<Offset> position;
+  final AnimationController controller;
+  final Animation<double> animation;
+  bool isActive;
+  bool isAnimating;
+  Color color;
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
+  RippleEffect({
+    required Offset initialPosition,
+    required this.controller,
+    required this.animation,
+    this.isActive = true,
+    this.isAnimating = true,
+    this.color = const Color(0x4DFFFFFF),
+  }) : position = ValueNotifier<Offset>(initialPosition);
+
+  void updatePosition(Offset newPosition) {
+    position.value = newPosition;
+  }
+
+  void updateColor(Color newColor) {
+    color = newColor;
+  }
+}
+
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  Map<int, RippleEffect> activeRipples = {};
+  final double _rippleSize = 150.0;
+  final int maxRipples = 5;
+  Timer? _selectionTimer;
+  bool isSelectionComplete = false;
+
+  void startSelectionTimer() {
+    if (_selectionTimer?.isActive == true || isSelectionComplete) return;
+
+    _selectionTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted && activeRipples.length >= 2) {
+        selectRandomRipple();
+      }
+    });
+  }
+
+  void selectRandomRipple() {
+    if (activeRipples.isEmpty) return;
+
+    setState(() {
+      isSelectionComplete = true;
+
+      final random = Random();
+      final selectedKey =
+          activeRipples.keys.elementAt(random.nextInt(activeRipples.length));
+
+      activeRipples[selectedKey]!.updateColor(const Color(0xFF000000));
+
+      activeRipples.forEach((key, ripple) {
+        if (key != selectedKey) {
+          ripple.controller.reverse().then((_) {
+            ripple.controller.dispose();
+          });
+        }
+      });
+
+      activeRipples.removeWhere((key, _) => key != selectedKey);
+    });
+  }
+
+  void resetGame() {
+    setState(() {
+      // 모든 리플 제거
+      for (var ripple in activeRipples.values) {
+        ripple.controller.dispose();
+      }
+      activeRipples.clear();
+
+      // 타이머 취소
+      _selectionTimer?.cancel();
+      _selectionTimer = null;
+
+      // 선택 완료 상태 초기화
+      isSelectionComplete = false;
+    });
+  }
+
+  void onPointerDown(PointerDownEvent event) {
+    // 선택 완료 상태에서 터치하면 게임 리셋
+    if (isSelectionComplete) {
+      resetGame();
+      return;
+    }
+
+    if (activeRipples.length >= maxRipples) return;
+
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final localPosition = renderBox.globalToLocal(event.position);
+
+    final controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+
+    final ripple = RippleEffect(
+      initialPosition: localPosition,
+      controller: controller,
+      animation: Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeOut),
+      ),
     );
+
+    setState(() {
+      activeRipples[event.pointer] = ripple;
+    });
+
+    controller.forward().then((_) {
+      if (mounted && activeRipples.containsKey(event.pointer)) {
+        setState(() {
+          activeRipples[event.pointer]!.isAnimating = false;
+        });
+      }
+    });
+
+    if (activeRipples.length >= 2) {
+      startSelectionTimer();
+    }
+  }
+
+  void onPointerMove(PointerMoveEvent event) {
+    if (isSelectionComplete || !activeRipples.containsKey(event.pointer))
+      return;
+
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final localPosition = renderBox.globalToLocal(event.position);
+
+    setState(() {
+      activeRipples[event.pointer]!.updatePosition(localPosition);
+    });
+  }
+
+  void onPointerUp(PointerUpEvent event) {
+    if (isSelectionComplete) return;
+    if (!activeRipples.containsKey(event.pointer)) return;
+
+    final ripple = activeRipples[event.pointer]!;
+    ripple.controller.reverse().then((_) {
+      if (mounted) {
+        setState(() {
+          ripple.controller.dispose();
+          activeRipples.remove(event.pointer);
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _selectionTimer?.cancel();
+    for (var ripple in activeRipples.values) {
+      ripple.controller.dispose();
+    }
     super.dispose();
-  }
-
-  void _handleTapDown(TapDownDetails details) async {
-    setState(() {
-      _showRipple = true;
-      _tapPosition = details.localPosition;
-    });
-    // await Vibration.vibrate(duration: 50);
-    _animationController.forward();
-  }
-
-  void _handleTapUp(TapUpDetails details) {
-    _animationController.reverse().then((_) {
-      setState(() {
-        _showRipple = false;
-      });
-    });
-  }
-
-  void _handleTapCancel() {
-    _animationController.reverse().then((_) {
-      setState(() {
-        _showRipple = false;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF98E4D8),
-      body: GestureDetector(
-        onTapDown: _handleTapDown,
-        onTapUp: _handleTapUp,
-        onTapCancel: _handleTapCancel,
-        child: Stack(
-          children: [
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Betting Start!',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (_showRipple)
-              Positioned(
-                left: _tapPosition.dx - 25,
-                top: _tapPosition.dy - 25,
-                child: AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return Container(
-                      width: 50 * _animation.value,
-                      height: 50 * _animation.value,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.3),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
+      body: Listener(
+        onPointerDown: onPointerDown,
+        onPointerMove: onPointerMove,
+        onPointerUp: onPointerUp,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      isSelectionComplete
+                          ? 'Touch to restart!'
+                          : 'Betting Start!',
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              ...activeRipples.values.map(
+                (ripple) => ValueListenableBuilder<Offset>(
+                  valueListenable: ripple.position,
+                  builder: (context, position, child) {
+                    return AnimatedBuilder(
+                      animation: ripple.animation,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          size: Size.infinite,
+                          painter: CirclePainter(
+                            center: position,
+                            progress: ripple.animation.value,
+                            rippleSize: _rippleSize,
+                            color: ripple.color,
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: SizedBox(
@@ -281,5 +400,42 @@ class _MyHomePageState extends State<MyHomePage>
         ),
       ),
     );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final Offset center;
+  final double progress;
+  final double rippleSize;
+  final Color color;
+
+  CirclePainter({
+    required this.center,
+    required this.progress,
+    required this.rippleSize,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    final radius = rippleSize * (progress >= 1.0 ? 0.5 : progress / 2);
+
+    canvas.drawCircle(
+      center,
+      radius,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CirclePainter oldDelegate) {
+    return progress != oldDelegate.progress ||
+        center != oldDelegate.center ||
+        color != oldDelegate.color;
   }
 }
