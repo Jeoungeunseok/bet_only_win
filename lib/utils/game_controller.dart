@@ -34,7 +34,9 @@ class GameController {
           selectRandomRipple();
         });
       } else {
-        countdown.value = countdown.value! - 1;
+        if (countdown.value != null && countdown.value! > 0) {
+          countdown.value = countdown.value! - 1;
+        }
       }
     });
   }

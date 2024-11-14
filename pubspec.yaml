@@ -93,12 +93,12 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   assets:
-    - lib/image/app_logo.jpg
+    - lib/image/app_logo.png
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "lib/image/app_logo.jpg"
+  image_path: "lib/image/app_logo.png"
   adaptive_icon_background: "#98E4D8"
-  adaptive_icon_foreground: "lib/image/app_logo.jpg"
+  adaptive_icon_foreground: "lib/image/app_logo.png"
   min_sdk_android: 21
