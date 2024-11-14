@@ -44,22 +44,37 @@ class GameController {
 
     isSelectionComplete = true;
 
-    final random = Random();
-    final selectedKey =
-        activeRipples.keys.elementAt(random.nextInt(activeRipples.length));
+    // 모서리가 아닌 리플들만 필터링
+    final nonCornerRipples =
+        activeRipples.entries.where((entry) => !entry.value.isCorner).toList();
 
-    activeRipples[selectedKey]!
-        .updateColor(const Color.fromARGB(255, 255, 0, 38));
+    if (nonCornerRipples.isEmpty) {
+      // 모든 리플이 모서리인 경우 전체 리플 중에서 선택
+      final random = Random();
+      final selectedKey =
+          activeRipples.keys.elementAt(random.nextInt(activeRipples.length));
+      activeRipples[selectedKey]!
+          .updateColor(const Color.fromARGB(255, 255, 0, 38));
+    } else {
+      // 모서리가 아닌 리플 중에서 랜덤 선택
+      final random = Random();
+      final selectedEntry =
+          nonCornerRipples[random.nextInt(nonCornerRipples.length)];
+      activeRipples[selectedEntry.key]!
+          .updateColor(const Color.fromARGB(255, 255, 0, 38));
+    }
 
+    // 선택되지 않은 리플 제거
     activeRipples.forEach((key, ripple) {
-      if (key != selectedKey) {
+      if (ripple.color != const Color.fromARGB(255, 255, 0, 38)) {
         ripple.controller.reverse().then((_) {
           ripple.controller.dispose();
         });
       }
     });
 
-    activeRipples.removeWhere((key, _) => key != selectedKey);
+    activeRipples.removeWhere(
+        (key, ripple) => ripple.color != const Color.fromARGB(255, 255, 0, 38));
     onStateChanged();
   }
 
@@ -120,12 +135,23 @@ class GameController {
       duration: const Duration(milliseconds: 300),
     );
 
+    bool isCorner = false;
+    // 활성화된 모서리 확인
+    if ((isLeftBottom && leftBottomEnabled) ||
+        (isRightBottom && rightBottomEnabled) ||
+        (isRightTop && rightTopEnabled) ||
+        (isLeftTop && leftTopEnabled)) {
+      isCorner = true;
+      print('모서리에서 시작된 리플입니다!');
+    }
+
     final ripple = RippleEffect(
       initialPosition: localPosition,
       controller: controller,
       animation: Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOut),
       ),
+      isCorner: isCorner,
     );
 
     activeRipples[event.pointer] = ripple;
