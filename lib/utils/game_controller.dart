@@ -22,11 +22,15 @@ class GameController {
   GameController(this.vsync, this.onStateChanged);
 
   void startSelectionTimer() {
-    if (selectionTimer?.isActive == true || isSelectionComplete) return;
+    // 기존 타이머가 있다면 취소
+    selectionTimer?.cancel();
 
+    if (isSelectionComplete) return;
+
+    // 카운트다운 재시작
     countdown.value = 3;
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    selectionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (countdown.value == 1) {
         timer.cancel();
         Future.delayed(const Duration(milliseconds: 200), () {
