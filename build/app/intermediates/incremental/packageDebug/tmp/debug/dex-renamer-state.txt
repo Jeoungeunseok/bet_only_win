@@ -1,4 +1,0 @@
-#Thu Nov 14 07:51:24 GMT+09:00 2024
-base.0=C\:\\Users\\wjddm\\Project\\bet\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
