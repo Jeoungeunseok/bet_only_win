@@ -11,15 +11,24 @@ class GameController {
   bool isSelectionComplete = false;
   final TickerProvider vsync;
   final Function() onStateChanged;
+  ValueNotifier<int?> countdown = ValueNotifier<int?>(null);
 
   GameController(this.vsync, this.onStateChanged);
 
   void startSelectionTimer() {
     if (selectionTimer?.isActive == true || isSelectionComplete) return;
 
-    selectionTimer = Timer(const Duration(seconds: 3), () {
-      if (activeRipples.length >= 2) {
-        selectRandomRipple();
+    countdown.value = 3;
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (countdown.value == 1) {
+        timer.cancel();
+        Future.delayed(const Duration(milliseconds: 200), () {
+          countdown.value = null;
+          selectRandomRipple();
+        });
+      } else {
+        countdown.value = countdown.value! - 1;
       }
     });
   }
@@ -33,7 +42,8 @@ class GameController {
     final selectedKey =
         activeRipples.keys.elementAt(random.nextInt(activeRipples.length));
 
-    activeRipples[selectedKey]!.updateColor(const Color(0xFF000000));
+    activeRipples[selectedKey]!
+        .updateColor(const Color.fromARGB(255, 255, 0, 38));
 
     activeRipples.forEach((key, ripple) {
       if (key != selectedKey) {
@@ -57,6 +67,7 @@ class GameController {
     selectionTimer = null;
 
     isSelectionComplete = false;
+    countdown.value = null;
     onStateChanged();
   }
 
@@ -118,6 +129,13 @@ class GameController {
     ripple.controller.reverse().then((_) {
       ripple.controller.dispose();
       activeRipples.remove(event.pointer);
+
+      if (activeRipples.length < 2) {
+        countdown.value = null;
+        selectionTimer?.cancel();
+        selectionTimer = null;
+      }
+
       onStateChanged();
     });
   }

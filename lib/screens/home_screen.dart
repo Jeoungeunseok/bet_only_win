@@ -49,15 +49,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      gameController.isSelectionComplete
-                          ? 'Touch to restart!'
-                          : 'Betting Start!',
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    ValueListenableBuilder<int?>(
+                      valueListenable: gameController.countdown,
+                      builder: (context, value, child) {
+                        if (value != null) {
+                          return Text(
+                            value.toString(),
+                            style: const TextStyle(
+                              fontSize: 64,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          );
+                        }
+                        return Text(
+                          gameController.isSelectionComplete
+                              ? 'Touch to restart!'
+                              : 'Betting Start!',
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
