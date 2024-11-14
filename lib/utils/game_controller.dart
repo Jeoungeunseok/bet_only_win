@@ -13,6 +13,12 @@ class GameController {
   final Function() onStateChanged;
   ValueNotifier<int?> countdown = ValueNotifier<int?>(null);
 
+  // 코너 설정 상태 추가
+  bool leftBottomEnabled = false;
+  bool rightBottomEnabled = false;
+  bool rightTopEnabled = false;
+  bool leftTopEnabled = false;
+
   GameController(this.vsync, this.onStateChanged);
 
   void startSelectionTimer() {
@@ -80,7 +86,34 @@ class GameController {
     if (activeRipples.length >= maxRipples) return;
 
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Size screenSize = renderBox.size;
     final localPosition = renderBox.globalToLocal(event.position);
+
+    // 각 모서리 영역 확인
+    bool isLeftBottom =
+        localPosition.dx <= 50 && localPosition.dy >= (screenSize.height - 50);
+    bool isRightBottom = localPosition.dx >= (screenSize.width - 50) &&
+        localPosition.dy >= (screenSize.height - 50);
+    bool isRightTop = localPosition.dx >= (screenSize.width - 50) &&
+        localPosition.dy >= 50 &&
+        localPosition.dy <= 100;
+    bool isLeftTop = localPosition.dx <= 50 &&
+        localPosition.dy >= 50 &&
+        localPosition.dy <= 100;
+
+    // 활성화된 모서리만 디버그 출력
+    if (isLeftBottom && leftBottomEnabled) {
+      print('왼쪽 하단 모서리가 터치되었습니다!');
+    }
+    if (isRightBottom && rightBottomEnabled) {
+      print('오른쪽 하단 모서리가 터치되었습니다!');
+    }
+    if (isRightTop && rightTopEnabled) {
+      print('오른쪽 상단 모서리가 터치되었습니다!');
+    }
+    if (isLeftTop && leftTopEnabled) {
+      print('왼쪽 상단 모서리가 터치되었습니다!');
+    }
 
     final controller = AnimationController(
       vsync: vsync,
@@ -146,5 +179,18 @@ class GameController {
       ripple.controller.dispose();
     }
     activeRipples.clear();
+  }
+
+  // 코너 설정을 업데이트하는 메서드
+  void updateCornerSettings({
+    required bool leftBottom,
+    required bool rightBottom,
+    required bool rightTop,
+    required bool leftTop,
+  }) {
+    leftBottomEnabled = leftBottom;
+    rightBottomEnabled = rightBottom;
+    rightTopEnabled = rightTop;
+    leftTopEnabled = leftTop;
   }
 }
