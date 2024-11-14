@@ -15,22 +15,7 @@ class SecretSettingsDialog extends StatefulWidget {
 }
 
 class _SecretSettingsDialogState extends State<SecretSettingsDialog> {
-  bool leftBottom = false;
-  bool rightBottom = false;
-  bool rightTop = false;
-  bool leftTop = false;
-
-  void _updateGameController() {
-    widget.gameController.updateCornerSettings(
-      leftBottom: leftBottom,
-      rightBottom: rightBottom,
-      rightTop: rightTop,
-      leftTop: leftTop,
-    );
-  }
-
-  Widget _buildToggleOption(
-      String title, bool value, Function(bool) onChanged) {
+  Widget _buildToggleOption(String title, ValueNotifier<bool> valueNotifier) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: const BoxDecoration(
@@ -51,15 +36,17 @@ class _SecretSettingsDialogState extends State<SecretSettingsDialog> {
               color: Colors.white,
             ),
           ),
-          CupertinoSwitch(
-            value: value,
-            onChanged: (newValue) {
-              setState(() {
-                onChanged(newValue);
-                _updateGameController();
-              });
+          ValueListenableBuilder<bool>(
+            valueListenable: valueNotifier,
+            builder: (context, value, child) {
+              return CupertinoSwitch(
+                value: value,
+                onChanged: (newValue) {
+                  valueNotifier.value = newValue;
+                },
+                activeColor: const Color(0xFF0A84FF),
+              );
             },
-            activeColor: const Color(0xFF0A84FF),
           ),
         ],
       ),
@@ -124,23 +111,19 @@ class _SecretSettingsDialogState extends State<SecretSettingsDialog> {
             const SizedBox(height: 20),
             _buildToggleOption(
               '왼쪽 하단 모서리',
-              leftBottom,
-              (value) => setState(() => leftBottom = value),
+              widget.gameController.leftBottomEnabled,
             ),
             _buildToggleOption(
               '오른쪽 하단 모서리',
-              rightBottom,
-              (value) => setState(() => rightBottom = value),
+              widget.gameController.rightBottomEnabled,
             ),
             _buildToggleOption(
               '오른쪽 상단 모서리',
-              rightTop,
-              (value) => setState(() => rightTop = value),
+              widget.gameController.rightTopEnabled,
             ),
             _buildToggleOption(
               '왼쪽 상단 모서리',
-              leftTop,
-              (value) => setState(() => leftTop = value),
+              widget.gameController.leftTopEnabled,
             ),
           ],
         ),

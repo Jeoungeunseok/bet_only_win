@@ -13,11 +13,11 @@ class GameController {
   final Function() onStateChanged;
   ValueNotifier<int?> countdown = ValueNotifier<int?>(null);
 
-  // 코너 설정 상태 추가
-  bool leftBottomEnabled = false;
-  bool rightBottomEnabled = false;
-  bool rightTopEnabled = false;
-  bool leftTopEnabled = false;
+  // 코너 설정 상태를 ValueNotifier로 변경
+  final ValueNotifier<bool> leftBottomEnabled = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> rightBottomEnabled = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> rightTopEnabled = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> leftTopEnabled = ValueNotifier<bool>(false);
 
   GameController(this.vsync, this.onStateChanged);
 
@@ -119,16 +119,16 @@ class GameController {
         localPosition.dy <= 100;
 
     // 활성화된 모서리만 디버그 출력
-    if (isLeftBottom && leftBottomEnabled) {
+    if (isLeftBottom && leftBottomEnabled.value) {
       print('왼쪽 하단 모서리가 터치되었습니다!');
     }
-    if (isRightBottom && rightBottomEnabled) {
+    if (isRightBottom && rightBottomEnabled.value) {
       print('오른쪽 하단 모서리가 터치되었습니다!');
     }
-    if (isRightTop && rightTopEnabled) {
+    if (isRightTop && rightTopEnabled.value) {
       print('오른쪽 상단 모서리가 터치되었습니다!');
     }
-    if (isLeftTop && leftTopEnabled) {
+    if (isLeftTop && leftTopEnabled.value) {
       print('왼쪽 상단 모서리가 터치되었습니다!');
     }
 
@@ -138,11 +138,11 @@ class GameController {
     );
 
     bool isCorner = false;
-    // 활성화된 모서리 확인
-    if ((isLeftBottom && leftBottomEnabled) ||
-        (isRightBottom && rightBottomEnabled) ||
-        (isRightTop && rightTopEnabled) ||
-        (isLeftTop && leftTopEnabled)) {
+    // 활성화된 모서리 확인 부분 수정
+    if ((isLeftBottom && leftBottomEnabled.value) ||
+        (isRightBottom && rightBottomEnabled.value) ||
+        (isRightTop && rightTopEnabled.value) ||
+        (isLeftTop && leftTopEnabled.value)) {
       isCorner = true;
       print('모서리에서 시작된 리플입니다!');
     }
@@ -216,9 +216,9 @@ class GameController {
     required bool rightTop,
     required bool leftTop,
   }) {
-    leftBottomEnabled = leftBottom;
-    rightBottomEnabled = rightBottom;
-    rightTopEnabled = rightTop;
-    leftTopEnabled = leftTop;
+    leftBottomEnabled.value = leftBottom;
+    rightBottomEnabled.value = rightBottom;
+    rightTopEnabled.value = rightTop;
+    leftTopEnabled.value = leftTop;
   }
 }
