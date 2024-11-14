@@ -2,6 +2,18 @@
   "configVersion": 2,
   "packages": [
     {
+      "name": "archive",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/archive-3.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "args",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "async",
       "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.11.0",
       "packageUri": "lib/",
@@ -20,6 +32,18 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "checked_yaml",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/checked_yaml-2.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "cli_util",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/cli_util-0.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "clock",
       "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.1",
       "packageUri": "lib/",
@@ -30,6 +54,12 @@
       "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.17.2",
       "packageUri": "lib/",
       "languageVersion": "2.18"
+    },
+    {
+      "name": "crypto",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/crypto-3.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "cupertino_icons",
@@ -54,6 +84,12 @@
       "rootUri": "file:///C:/Users/wjddm/fvm/versions/3.13.9/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_launcher_icons",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
     },
     {
       "name": "flutter_lints",
@@ -81,15 +117,27 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.0",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/http-0.13.6",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "2.19"
     },
     {
       "name": "http_parser",
       "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/http_parser-4.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "image",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/image-4.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
+      "name": "json_annotation",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/json_annotation-4.9.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "lints",
@@ -117,9 +165,9 @@
     },
     {
       "name": "package_info_plus",
-      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-4.2.0",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-3.1.2",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "2.12"
     },
     {
       "name": "package_info_plus_platform_interface",
@@ -132,6 +180,12 @@
       "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.8.3",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "petitparser",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-5.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "plugin_platform_interface",
@@ -201,9 +255,21 @@
     },
     {
       "name": "win32",
-      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.1.1",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/win32-4.1.4",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "xml",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/xml-6.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "yaml",
+      "rootUri": "file:///C:/Users/wjddm/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "bet",
@@ -212,7 +278,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2024-11-13T06:21:08.229533Z",
+  "generated": "2024-11-14T01:46:52.312181Z",
   "generator": "pub",
   "generatorVersion": "3.1.5"
 }
